@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Manager</title>
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+  <h1>Product Manager</h1>
+
+  <form id="add-product-form">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" required><br><br>
+
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required></textarea><br><br>
+
+    <button type="submit">Add Product</button>
+  </form>
+
+  <ul id="product-list"></ul>
+
+  <script>
+    // Clasa Product
+    class Product {
+      constructor(name, price, description) {
+        this.name = name;
+        this.price = price;
+        this.description = description;
+      }
+    }
+
+    // Clasa ProductList
+    class ProductList {
+      constructor() {
+        this.products = [];
+      }
+
+      addProduct(product) {
+        this.products.push(product);
+      }
+
+      removeProduct(product) {
+        const index = this.products.indexOf(product);
+        if (index > -1) {
+          this.products.splice(index, 1);
+        }
+      }
+
+      getProduct(index) {
+        return this.products[index];
+      }
+
+      getProducts() {
+        return this.products;
+      }
+    }
+
+    // Clasa ProductManager
+    class ProductManager {
+      constructor() {
+        this.productList = new ProductList();
+        this.productListElement = document.getElementById('product-list');
+        this.addProductForm = document.getElementById('add-product-form');
+        this.addProductForm.addEventListener('submit', this.addProduct.bind(this));
+      }
+
+      addProduct(event) {
+        event.preventDefault();
+        const name = event.target.name.value;
+        const price = event.target.price.value;
+        const description = event.target.description.value;
+        const product = new Product(name, price, description);
+        this.productList.addProduct(product);
+        this.renderProducts();
+        event.target.reset();
+      }
+
+      removeProduct(product) {
+        this.productList.removeProduct(product);
+        this.renderProducts();
+      }
+
+      renderProducts() {
+        const products = this.productList.getProducts();
+        this.productListElement.innerHTML = '';
+        products.forEach((product) => {
+          const li = document.createElement('li');
+          li.innerText = `${product.name} - $${product.price} - ${product.description}`;
+          const button = document.createElement('button');
+          button.innerText = 'Remove';
+          button.addEventListener('click', () => {
+            this.removeProduct(product);
+          });
+          li.appendChild(button);
+          this.productListElement.appendChild(li);
+        });
+      }
+    }
+
+    // Instantierea si utilizarea clasei ProductManager
+    const productManager = new ProductManager();
+  </script>
+</body>
+</html>
+
